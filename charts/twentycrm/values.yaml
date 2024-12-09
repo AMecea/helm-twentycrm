@@ -3,14 +3,19 @@ image: twentycrm/twenty:latest
 
 # A list of env that can be set:
 # https://twenty.com/developers/section/self-hosting/self-hosting-var
-env: []
+env:
+  STORAGE_TYPE: "local"
+  SIGN_IN_PREFILLED: "false"
+  ACCESS_TOKEN_EXPIRES_IN: 7d
+  LOGIN_TOKEN_EXPIRES_IN: 1h
+  #IS_SIGN_UP_DISABLED: "true"
 
 secrets:
-  accessToken:
-  loginToken:
-  refreshToken:
-  fileToken:
-
+  # appToken:
+  # accessToken:
+  # loginToken:
+  # refreshToken:
+  # fileToken:
 
 
 server:

@@ -45,6 +45,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: {{ .Release.Name }}-app-secrets
+              key: PG_PASSWORD
+
+        - name: POSTGRESQL_POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-app-secrets
               key: PG_ADMIN_PASSWORD
 
         - name: POSTGRES_DATABASE
@@ -55,6 +61,7 @@ spec:
 
         - name: BITNAMI_DEBUG
           value: "true"
+
         ports:
         - containerPort: 5432
           name: tcp

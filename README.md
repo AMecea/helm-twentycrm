@@ -1,7 +1,7 @@
 # TwentyCRM helm chart
 
 
-This repository provides a helm chart to deploy TwentyCRM.
+This repository provides a helm chart to deploy [TwentyCRM](https://twenty.com/).
 
 ## Install
 
@@ -20,7 +20,8 @@ For a complete list of configuration fields please check [values.yaml](./values.
 | Field Name                       | Description                                                                               | Default Value           |
 |----------------------------------|-------------------------------------------------------------------------------------------|-------------------------|
 | `image`                          | Docker image for the application.                                                        | `twentycrm/twenty:latest` |
-| `env`                            | List of environment variables for configuring the application.                           | `[]`                    |
+| `env`                            | [List of environment variables](https://twenty.com/developers/section/self-hosting/self-hosting-var) for configuring the application.| `{}`|
+| `secrets.appSecret`              | Secret used for encryption across the app.                                               |                         |
 | `secrets.accessToken`            | Access token for authentication.                                                         |                         |
 | `secrets.loginToken`             | Login token for authentication.                                                          |                         |
 | `secrets.refreshToken`           | Refresh token for authentication.                                                        |                         |

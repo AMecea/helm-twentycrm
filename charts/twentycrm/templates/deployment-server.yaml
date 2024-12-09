@@ -66,12 +66,8 @@ spec:
           value: "https://{{ .Values.ingress.host }}"
         - name: ENABLE_DB_MIGRATIONS
           value: "true"
-        - name: SIGN_IN_PREFILLED
-          value: "true"
-        - name: STORAGE_TYPE
-          value: "local"
         - name: "MESSAGE_QUEUE_TYPE"
-          value: "pg-boss"
+          value: "bull-mq"
 
         ports:
         - containerPort: 3000

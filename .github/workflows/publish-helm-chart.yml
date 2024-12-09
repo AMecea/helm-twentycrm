@@ -1,0 +1,42 @@
+name: Publish Helm Chart
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'charts/**'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Helm
+      uses: azure/setup-helm@v4
+      with:
+        version: v3.12.3
+
+    - name: Create Helm package
+      run: |
+        mkdir -p public
+        helm package ./charts/twentycrm -d ./public
+        helm repo index ./public/ --url https://amecea.github.io/helm-twentycrm
+        pwd
+        ls -la
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public

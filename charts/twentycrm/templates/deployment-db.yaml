@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-db
+  labels:
+    app: {{ template "name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+
+  selector:
+    matchLabels:
+      app: {{ template "name" . }}
+      release: {{ .Release.Name }}
+      role: db
+  template:
+    metadata:
+      labels:
+        app: {{ template "name" . }}
+        release: {{ .Release.Name }}
+        role: db
+    spec:
+      securityContext:
+        fsGroup: 1001
+      volumes:
+      - name: twentycrm-db-data
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-db-pvc
+
+      containers:
+      - name: twentycrm-db
+        image: {{ .Values.db.image }}
+        imagePullPolicy: Always
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-app-secrets
+              key: PG_ADMIN_PASSWORD
+
+        - name: POSTGRES_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-app-secrets
+              key: PG_DATABASE
+
+        - name: BITNAMI_DEBUG
+          value: "true"
+        ports:
+        - containerPort: 5432
+          name: tcp
+          protocol: TCP
+        resources:
+          {{- toYaml .Values.db.resources | indent 12 | printf "\n%s" }}
+        volumeMounts:
+        - mountPath: /bitnami/postgresql
+          name: twentycrm-db-data

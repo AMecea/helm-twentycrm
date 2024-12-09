@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-worker
+  labels:
+    app: {{ template "name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+
+spec:
+  progressDeadlineSeconds: 600
+  replicas: {{ .Values.worker.replicas }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ template "name" . }}
+      release: {{ .Release.Name }}
+      role: worker
+
+  template:
+    metadata:
+      labels:
+        app: {{ template "name" . }}
+        release: {{ .Release.Name }}
+        role: worker
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+    spec:
+      containers:
+      - name: twentycrm-worker
+        image: {{ .Values.image }}
+        imagePullPolicy: Always
+        envFrom:
+          - secretRef:
+              name: {{ .Release.Name }}-app-secrets
+          - secretRef:
+              name: {{ .Release.Name }}-app-tokens
+        env:
+        - name: SERVER_URL
+          value: "https://{{ .Values.ingress.host }}"
+        - name: FRONT_BASE_URL
+          value: "https://{{ .Values.ingress.host }}"
+        - name: ENABLE_DB_MIGRATIONS
+          value: "false"
+        - name: SIGN_IN_PREFILLED
+          value: "true"
+        - name: STORAGE_TYPE
+          value: "local"
+        - name: "MESSAGE_QUEUE_TYPE"
+          value: "pg-boss"
+
+        command:
+          - yarn
+          - worker:prod
+        resources:
+          {{- toYaml .Values.worker.resources | indent 12 | printf "\n%s" }}
+

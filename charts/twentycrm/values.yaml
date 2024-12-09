@@ -1,0 +1,61 @@
+
+image: twentycrm/twenty:latest
+
+# A list of env that can be set:
+# https://twenty.com/developers/section/self-hosting/self-hosting-var
+env: []
+
+secrets:
+  accessToken:
+  loginToken:
+  refreshToken:
+  fileToken:
+
+
+
+server:
+  replicas: 1
+  storage: 5Gi
+  #storageClassName:
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+
+worker:
+  replicas: 1
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+
+db:
+  image: twentycrm/twenty-postgres:latest
+  storage: 5Gi
+  #storageClassName:
+
+  #adminPassword: some-random-string
+
+  # those should be set in stone because are configured in init.sql
+  database: twenty
+  user: twenty
+  password: twenty
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+
+redis:
+  image: redis:latest
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "20m"
+
+
+
+ingress:
+  enabled: true
+  host: crm.example.com
+  class: nginx

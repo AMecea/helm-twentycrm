@@ -1,0 +1,38 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ template "name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+   nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Forwarded-For $http_x_forwarded_for";
+   nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+   nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+   {{- range $key, $value := .Values.ingress.annotations }}
+   {{ $key }}: {{ $value | quote }}
+   {{- end }}
+
+spec:
+  ingressClassName: {{ .Values.ingress.class }}
+  rules:
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Release.Name }}-server
+            port:
+              name: http-tcp
+
+  {{- if .Values.ingress.tls }}
+  tls:
+    {{- toYaml .Values.ingress.tls | indent 4 | printf "\n%s" }}
+  {{- end -}}
+{{- end }}

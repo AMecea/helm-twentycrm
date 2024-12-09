@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-server
+  labels:
+    app: {{ template "name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+
+spec:
+  progressDeadlineSeconds: 600
+  replicas: {{ .Values.server.replicas }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ template "name" . }}
+      release: {{ .Release.Name }}
+      role: server
+
+  template:
+    metadata:
+      labels:
+        app: {{ template "name" . }}
+        release: {{ .Release.Name }}
+        role: server
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+    spec:
+      securityContext:
+        fsGroup: 1001
+
+      volumes:
+      - name: twentycrm-server-data
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-server-pvc
+      initContainers:
+        # if it's not ready at first start the db setup fail badly
+        - name: wait-db-ready
+          image: {{ .Values.db.image }}
+          command: ["pg_isready", "-d", "$(PG_DATABASE_URL)" ]
+          envFrom:
+          - secretRef:
+              name: {{ .Release.Name }}-app-secrets
+
+      containers:
+      - name: twentycrm-server
+        image: {{ .Values.image }}
+        imagePullPolicy: Always
+        envFrom:
+          - secretRef:
+              name: {{ .Release.Name }}-app-secrets
+          - secretRef:
+              name: {{ .Release.Name }}-app-tokens
+
+        env:
+        - name: PORT
+          value: "3000"
+        - name: SERVER_URL
+          value: "https://{{ .Values.ingress.host }}"
+        - name: FRONT_BASE_URL
+          value: "https://{{ .Values.ingress.host }}"
+        - name: ENABLE_DB_MIGRATIONS
+          value: "true"
+        - name: SIGN_IN_PREFILLED
+          value: "true"
+        - name: STORAGE_TYPE
+          value: "local"
+        - name: "MESSAGE_QUEUE_TYPE"
+          value: "pg-boss"
+
+        ports:
+        - containerPort: 3000
+          name: http-tcp
+          protocol: TCP
+        resources:
+          {{- toYaml .Values.server.resources | indent 12 | printf "\n%s" }}
+        volumeMounts:
+        - mountPath: /app/docker-data
+          name: twentycrm-server-data
+        - mountPath: /app/.local-storage
+          name: twentycrm-server-data
+        #livenessProbe:
+        #  httpGet:
+        #    path: "/healthz"
+        #    port: 3000
+        #readinessProbe:
+        #  httpGet:
+        #    path: "/healthz"
+        #    port: 3000

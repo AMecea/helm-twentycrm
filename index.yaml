@@ -2,11 +2,11 @@ apiVersion: v1
 entries:
   twentycrm:
   - apiVersion: v1
-    created: "2024-12-09T20:28:21.971589926Z"
+    created: "2024-12-10T07:28:50.157018105Z"
     description: A Helm chart for https://github.com/twentyhq/twenty
-    digest: 47eba82df20d63399e4fa4510b9f369c2bc4d691aebce213a26b776da526007a
+    digest: 4a6246a74d75425b699fe06aa234b33b2d81549b63b03fcb9c6f8e4a615a8db9
     name: twentycrm
     urls:
-    - https://amecea.github.io/helm-twentycrm/twentycrm-0.1.0.tgz
-    version: 0.1.0
-generated: "2024-12-09T20:28:21.971174744Z"
+    - https://amecea.github.io/helm-twentycrm/twentycrm-0.1.1.tgz
+    version: 0.1.1
+generated: "2024-12-10T07:28:50.15653136Z"

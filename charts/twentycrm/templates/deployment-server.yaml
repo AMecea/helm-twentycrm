@@ -38,6 +38,9 @@ spec:
       - name: twentycrm-server-data
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-server-pvc
+      - name: twentycrm-docker-data
+        emptyDir: {}
+
       initContainers:
         # if it's not ready at first start the db setup fail badly
         - name: wait-db-ready
@@ -77,8 +80,8 @@ spec:
           {{- toYaml .Values.server.resources | indent 12 | printf "\n%s" }}
         volumeMounts:
         - mountPath: /app/docker-data
-          name: twentycrm-server-data
-        - mountPath: /app/.local-storage
+          name: twentycrm-docker-data
+        - mountPath: /app/packages/twenty-server/.local-storage
           name: twentycrm-server-data
         #livenessProbe:
         #  httpGet:

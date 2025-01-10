@@ -43,10 +43,8 @@ spec:
         env:
         - name: SERVER_URL
           value: "https://{{ .Values.ingress.host }}"
-        - name: FRONT_BASE_URL
-          value: "https://{{ .Values.ingress.host }}"
-        - name: ENABLE_DB_MIGRATIONS
-          value: "false"
+        - name: DISABLE_DB_MIGRATIONS
+          value: "true"
         - name: SIGN_IN_PREFILLED
           value: "true"
         - name: STORAGE_TYPE

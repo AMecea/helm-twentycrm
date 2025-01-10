@@ -61,7 +61,6 @@ spec:
 
         - name: BITNAMI_DEBUG
           value: "true"
-
         ports:
         - containerPort: 5432
           name: tcp

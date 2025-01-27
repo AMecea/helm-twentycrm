@@ -35,6 +35,7 @@ worker:
       cpu: "100m"
 
 db:
+  enabled: true
   image: twentycrm/twenty-postgres:latest
   storage: 5Gi
   #storageClassName:
@@ -50,6 +51,10 @@ db:
     requests:
       memory: "256Mi"
       cpu: "100m"
+
+externalDb:
+  enabled: false
+  postgresConnectionString: "postgres://twenty:twenty@host:5432/twenty"
 
 redis:
   image: redis:latest

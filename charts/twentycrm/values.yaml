@@ -8,7 +8,6 @@ env:
   SIGN_IN_PREFILLED: "false"
   ACCESS_TOKEN_EXPIRES_IN: 7d
   LOGIN_TOKEN_EXPIRES_IN: 1h
-  #IS_SIGN_UP_DISABLED: "true"
 
 secrets:
   # appToken:

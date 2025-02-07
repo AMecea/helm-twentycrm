@@ -8,7 +8,6 @@ env:
   SIGN_IN_PREFILLED: "false"
   ACCESS_TOKEN_EXPIRES_IN: 7d
   LOGIN_TOKEN_EXPIRES_IN: 1h
-  #IS_SIGN_UP_DISABLED: "true"
 
 secrets:
   # appToken:
@@ -35,6 +34,7 @@ worker:
       cpu: "100m"
 
 db:
+  enabled: true
   image: twentycrm/twenty-postgres:latest
   storage: 5Gi
   #storageClassName:
@@ -50,6 +50,10 @@ db:
     requests:
       memory: "256Mi"
       cpu: "100m"
+
+externalDb:
+  enabled: false
+  postgresConnectionString: "postgres://twenty:twenty@host:5432/twenty"
 
 redis:
   image: redis:latest
